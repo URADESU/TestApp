@@ -8,6 +8,7 @@ class ChatMessage{
     var timestamp: Long = 0
 
     //コンストラクタ
+    constructor(){}
     constructor(body: String, sender: String, timestamp: Long){
         this.body = body
         this.sender = sender

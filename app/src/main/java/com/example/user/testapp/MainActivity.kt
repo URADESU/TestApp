@@ -3,16 +3,19 @@ package com.example.user.testapp
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.ListView
 import android.widget.TextView
 import com.firebase.client.Firebase
 import com.firebase.ui.database.FirebaseListAdapter
+import com.google.android.gms.tasks.Continuation
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 
-
+//TODO: class、methodにドキュメンテーションコメントを記入
 class MainActivity : AppCompatActivity() {
     private val MESSAGE_STORE = "messages"
     private var mAdapter: FirebaseListAdapter<ChatMessage>? = null
@@ -37,21 +40,20 @@ class MainActivity : AppCompatActivity() {
         listView.adapter = mAdapter
     }
 
+    //データベースの参照を返すメソッド
     private fun getMessageRef() : DatabaseReference{
         val database: FirebaseDatabase = FirebaseDatabase.getInstance()
 
         return database.getReference(MESSAGE_STORE)
     }
 
-    private fun getRef() : Firebase{
-        return Firebase("https://testapp-632f6.firebaseio.com/messages")
-    }
-
     private fun setup(){
+        //sendボタン押下時の処理
         btn_send.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 val content = txt_content.text.toString()
 
+                //contentが空の場合、メッセージを送信しない
                 if(TextUtils.isEmpty(content)) return
 
                 sendMessage(content)
@@ -103,6 +105,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun sendMessage(content: String){
-        getMessageRef().push().setValue(ChatMessage(content, "ura", System.currentTimeMillis()))
+        getMessageRef().push().setValue(ChatMessage(content, "ura", System.currentTimeMillis())).continueWith(object : Continuation<Void, Any>{
+            override fun then(p0: Task<Void>): Any? {
+                if(!p0.isSuccessful){
+                    Log.e("sendMessage", "error", p0.exception)
+                }
+
+                (txt_content as TextView).text = ""
+
+                return null
+            }
+
+        })
     }
 }

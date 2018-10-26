@@ -15,11 +15,11 @@
     android:id="@+id/activityTop">
 
     <LinearLayout
+        android:id="@+id/linearLayout_activityTop"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="3"
-        android:id="@+id/linearLayout_activityTop">
+        android:weightSum="3">
 
         <Button
             android:id="@+id/button_to_fragment"

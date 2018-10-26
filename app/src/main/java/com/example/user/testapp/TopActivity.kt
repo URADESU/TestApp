@@ -24,6 +24,7 @@ class TopActivity : AppCompatActivity() {
 
 
         addRoom("room01")
+        addRoom("room02")
 
 
         button_to_fragment.setOnClickListener(object : View.OnClickListener{
@@ -48,7 +49,7 @@ class TopActivity : AppCompatActivity() {
         button.id = View.generateViewId()
         Log.i("addRoom", roomName + "のidを生成: id = " + button.id)
         button.text = roomName
-        val param = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f)
+        val param = LinearLayout.LayoutParams(0, getDisplaySize().x / 3, 1.0f)
         button.layoutParams = param
 
         linearLayout_activityTop.addView(button)

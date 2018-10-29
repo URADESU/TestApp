@@ -17,7 +17,7 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 
 class RoomFragment : Fragment() {
-    private val MESSAGE_STORE = "messages"
+    private lateinit var MESSAGE_STORE: String
     private var mAdapter: FirebaseListAdapter<ChatMessage>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -26,6 +26,8 @@ class RoomFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        MESSAGE_STORE = arguments!!.getString("roomName")
 
         setup()
     }

@@ -1,19 +1,15 @@
 package com.example.user.testapp
 
-import android.app.ActionBar
 import android.graphics.Point
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.support.constraint.ConstraintLayout
-import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.activity_top.*
+import com.google.firebase.database.DatabaseError
+
 
 class TopActivity : AppCompatActivity() {
 
@@ -23,8 +19,25 @@ class TopActivity : AppCompatActivity() {
         setContentView(R.layout.activity_top)
 
 
-        addRoom("room01")
-        addRoom("room02")
+
+        FirebaseRef().ref().addValueEventListener(object : com.google.firebase.database.ValueEventListener{
+            override fun onDataChange(p0: com.google.firebase.database.DataSnapshot) {
+                Log.d("Firebase", p0.value.toString() + "childの合計 = " + p0.childrenCount)
+                p0.children.forEach {
+                    Log.d("Firebase", "子要素 = " + it.key)
+                    addRoom(it.key.toString()).setOnClickListener(object : View.OnClickListener{
+                        override fun onClick(p0: View?) {
+                            Log.d("Firebase", it.key.toString() + "が押されました")
+
+                            toRoom(it.key.toString())
+                        }
+                    })
+                }
+            }
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        })
 
 
         button_to_fragment.setOnClickListener(object : View.OnClickListener{
@@ -44,7 +57,7 @@ class TopActivity : AppCompatActivity() {
     /**
      * トップ画面にRoomを追加する
      * */
-    private fun addRoom(roomName: String){
+    private fun addRoom(roomName: String) : Button{
         val button = Button(this)
         button.id = View.generateViewId()
         Log.i("addRoom", roomName + "のidを生成: id = " + button.id)
@@ -53,6 +66,8 @@ class TopActivity : AppCompatActivity() {
         button.layoutParams = param
 
         linearLayout_activityTop.addView(button)
+
+        return button
     }
 
     /**
@@ -65,5 +80,18 @@ class TopActivity : AppCompatActivity() {
         return point
     }
 
+    private fun toRoom(roomName: String){
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val roomFragment = RoomFragment()
+        val bundle = Bundle()
+
+        bundle.putString("roomName", roomName)
+        roomFragment.arguments = bundle
+
+        fragmentTransaction.replace(R.id.frame_room, roomFragment)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
+    }
 
 }
